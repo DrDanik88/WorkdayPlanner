@@ -6,14 +6,15 @@
 
 //All code needs to be wrapped into the function below. This is important  $(document).ready() function / $(function() {...}) is used to ensure that your JavaScript/jQuery code runs only after the document (HTML) has finished loading.
 $(function () {
-// Function to update the current day and time
+
 ////////////////////////////////////TIME FUNCTIONS////////////////////////////////
 var now; //made the variable now globally avaibale in the main function
 var currentTime;
 var currentDay;
-
+var currentHour;
+// Function to update the current day and time
 function updateDate() { 
-  //Add current time and date from the browser. The bottom commands will process the info
+  //Add current time and date from the browser. And shows it in the browser
     console.log(now); //this will show the new function being ran every second
   // Get the current day in the format "Day, Month Date, Year"
   currentDay = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -21,29 +22,52 @@ function updateDate() {
 };
 
   function updateTime() { 
-    now = new Date();
-  // Get the current time in the format "HH:MM:SS AM/PM"
-  currentTime = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  console.log(currentTime);
+    currentHour = now.getHours();
+    console.log("Current hour is " + currentHour); //get hour in 24 hour format. it will be easier to parse and compare in the timeblock function
+    currentTime = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' }); // Get the current time in the format "HH:MM:SS AM/PM"
+  
+ // console.log(currentTime); //debug
+ // console.log("f-updatetime "+currentHour) //debug
   $('#currentTime').text(currentTime);
 };
 
-function updateDateTime() { //I added one function to run both, to have better flexibility, kid of a modular approach.
+
+
+function timeblockcolors() {
+  console.log("block current time "+currentHour);
+   // Iterate over each time-block element
+  $('.time-block').each(function() {
+    var timeBlock = $(this);
+
+    // Parse the time value from the time-block element using the class hour
+    var time = timeBlock.find('.hour').text().trim();
+    var [hours, minutes] = time.split(':'); //split the 24 hours blocks in hours and minutes for better precision, if needed for the future.
+    // console.log ("block"+ hours); //debug if blocks are being scanned properly
+    // Compare the parsed time with the current time
+    if (hours < currentHour) {
+      timeBlock.removeClass('future').removeClass('present').addClass('past');
+    } else if (hours == currentHour) {
+      timeBlock.removeClass('past').removeClass('future').addClass('present');
+    } else {
+      timeBlock.removeClass('past').removeClass('present').addClass('future');
+    }   
+})};
+
+
+
+
+
+function updateDateTime() { //I added one function to run both, to have better flexibility, kind of a modular approach.
   now = new Date();
   updateDate();
   updateTime();
-};
+  timeblockcolors();
+  };
 
 updateDateTime ();
-setInterval(updateTime, 1000); //just updating the time, so we don't automatically refresh the date everytime. 
-//////////////////////////////////BLOCK FUNCTIONS////////////////////////////////////////
-//Step 2 : Change block color in function of time (change color using classes)
-
-function timeblockcolors() {
+setInterval(updateDateTime, 1000);//just updating the time, so we don't automatically refresh the date everytime. 
 
 
-
-};
   
   
   
