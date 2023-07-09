@@ -12,6 +12,8 @@ var now; //made the variable now globally avaibale in the main function
 var currentTime;
 var currentDay;
 var currentHour;
+var block;
+var blockId;
 // Function to update the current day and time
 function updateDate() { 
   //Add current time and date from the browser. And shows it in the browser
@@ -32,7 +34,7 @@ function updateDate() {
 };
 
 
-
+//////////////////////////////////BLOCK COLORING/////////////////////////////
 function timeblockcolors() {
   console.log("block current time "+currentHour);
    // Iterate over each time-block element
@@ -43,6 +45,7 @@ function timeblockcolors() {
     var time = timeBlock.find('.hour').text().trim();
     var [hours, minutes] = time.split(':'); //split the 24 hours blocks in hours and minutes for better precision, if needed for the future.
     // console.log ("block"+ hours); //debug if blocks are being scanned properly
+
     // Compare the parsed time with the current time
     if (hours < currentHour) {
       timeBlock.removeClass('future').removeClass('present').addClass('past');
@@ -53,25 +56,52 @@ function timeblockcolors() {
     }   
 })};
 
-
-
-
-
+///////////////////////RUN UPDATE FOR TIME AND BLOCK COLORING/TEXT////////////////////
 function updateDateTime() { //I added one function to run both, to have better flexibility, kind of a modular approach.
   now = new Date();
   updateDate();
   updateTime();
   timeblockcolors();
-  };
+   };
 
 updateDateTime ();
 setInterval(updateDateTime, 1000);//just updating the time, so we don't automatically refresh the date everytime. 
+readlocalstorage();
 
+////////////////////////////////BUTTON SECTION//////////////////////////////////////
+ 
+///EVENT LISTENER FOR BUTTON BEING CLICKED
+$(function buttons () {
+  // Find all the buttons within the time-blocks
+  var buttons = $('.time-block .btn'); 
+  // Add a click event listener for each button
+  buttons.click(function() {
+    // Get the specific block associated with the clicked button
+    block = $(this).closest('.time-block'); 
+    
+    // Code to execute when a button is clicked
+    console.log("Button clicked in block:", block.attr('id'));
+    savetext();
+    });
+});
 
+function savetext() {
+    console.log ("Text saved in block "+block.attr('id'));
+    blockId = block.attr('id');
+    var textarea = block.find('textarea');
+    var text = textarea.val();
+    localStorage.setItem(blockId, text);
+}; 
   
-  
-  
-  
+function readlocalstorage() {
+  $('.time-block').each(function () {
+    var textareaValue = localStorage.getItem($(this).attr('id'));
+
+    var textarea = $(this).children('textarea');
+
+    textarea.val(textareaValue);
+  })
+};  
   
   
   // TODO: Add a listener for click events on the save button. This code should
@@ -81,15 +111,9 @@ setInterval(updateDateTime, 1000);//just updating the time, so we don't automati
   // time-block containing the button that was clicked? How might the id be
   // useful when saving the description in local storage?
   //
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
   //
   // TODO: Add code to get any user input that was saved in localStorage and set
   // the values of the corresponding textarea elements. HINT: How can the id
   // attribute of each time-block be used to do this?
-  //
-  // TODO: Add code to display the current date in the header of the page.
+
 });
